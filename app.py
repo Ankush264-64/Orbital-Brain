@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # --- CONFIGURATION ---
 # 🔒 SECURE: We get the key from Render's "Environment Variables"
-GEMINI_KEY = os.environ.get("AIzaSyA3yUEwN3pDrtxtaeSLy8bOqpvQTtfjp9w")
+GEMINI_KEY = os.environ.get("AIzaSyAjv2YEyjo90lQKfw9QGLP2ILTPndnPGcY")
 
 # Configure Gemini
 if not GEMINI_KEY:
@@ -68,3 +68,4 @@ def process_command():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
