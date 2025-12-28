@@ -5,3 +5,6 @@ gunicorn
 google-generativeai
 duckduckgo-search
 requests
+mutagen
+pillow
+werkzeug
