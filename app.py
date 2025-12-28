@@ -5,13 +5,12 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
-# 🔑 PASTE YOUR KEY BELOW 🔑
-# Replace 'PASTE_YOUR_GEMINI_KEY_HERE' with your real API key "AIza..."
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyA3yUEwN3pDrtxtaeSLy8bOqpvQTtfjp9w")
+# 🔒 SECURE: We get the key from Render's "Environment Variables"
+GEMINI_KEY = os.environ.get("AIzaSyA3yUEwN3pDrtxtaeSLy8bOqpvQTtfjp9w")
 
 # Configure Gemini
-if GEMINI_KEY == "PASTE_YOUR_GEMINI_KEY_HERE":
-    print("⚠️ WARNING: API Key is missing! AI features will not work.")
+if not GEMINI_KEY:
+    print("⚠️ WARNING: API Key is missing! Check Render Environment Variables.")
 else:
     genai.configure(api_key=GEMINI_KEY)
     
@@ -21,7 +20,7 @@ model = genai.GenerativeModel('gemini-pro')
 
 @app.route('/')
 def home():
-    """The Cool Status Page (What you see in the browser)"""
+    """The Cool Status Page"""
     return """
     <style>
         body { background-color: #0d0d0d; color: #00d4ff; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
@@ -34,23 +33,20 @@ def home():
     <div class="box">
         <h1>Orbital <span class="blink">●</span> Online</h1>
         <p>System Status: OPERATIONAL</p>
-        <p>Cloud Brain: CONNECTED</p>
-        <p>Protocol: SECURE</p>
+        <p>Security: ENCRYPTED</p>
     </div>
     """
 
 @app.route('/command', methods=['POST'])
 def process_command():
-    """The Logic that talks to your Flutter App"""
     try:
-        # 1. Get the text from the phone
         data = request.json
         user_text = data.get('command', '')
 
         if not user_text:
             return jsonify({"response": "I didn't hear anything, Sir."})
 
-        # 2. THE PERSONALITY (JARVIS MODE)
+        # JARVIS Personality
         system_prompt = (
             "You are Orbital, a futuristic AI assistant for a college student named Ankush. "
             "You are helpful, concise, and slightly witty. "
@@ -59,18 +55,16 @@ def process_command():
         )
         full_prompt = f"{system_prompt}\n\nUser: {user_text}"
 
-        # 3. Ask Gemini
-        response = model.generate_content(full_prompt)
-        reply_text = response.text
+        if not GEMINI_KEY:
+            return jsonify({"response": "My API Key is missing, Sir. Please check the server."})
 
-        # 4. Send answer back to phone
-        return jsonify({"response": reply_text})
+        response = model.generate_content(full_prompt)
+        return jsonify({"response": response.text})
 
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"response": "I encountered a system error, Sir."}), 500
 
 if __name__ == '__main__':
-    # This allows Render to set the Port dynamically
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
