@@ -1,0 +1,6 @@
+flask
+flask-sqlalchemy
+gunicorn
+google-generativeai
+duckduckgo-search
+requests
